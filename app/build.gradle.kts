@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "ru.auskov.gpstracker"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "ru.auskov.gpstracker"
@@ -34,8 +34,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of(11))
+        }
     }
     buildFeatures {
         compose = true

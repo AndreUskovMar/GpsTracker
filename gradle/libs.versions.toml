@@ -1,6 +1,6 @@
 [versions]
-agp = "8.10.1"
-kotlin = "2.1.0"
+agp = "8.11.0"
+kotlin = "2.2.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -16,11 +16,11 @@ osmBonusPack = "6.9.0"
 hiltAndroid = "2.56.2"
 hiltNavigationCompose = "1.2.0"
 navVersion = "2.9.0"
-serializationKotlin = "1.7.3"
+serializationKotlin = "1.9.0"
 
-kspPlugin = "2.1.0-1.0.29"
+kspPlugin = "2.2.0-2.0.2"
 hiltPlugin = "2.56.2"
-serializationPlugin = "2.0.0"
+serializationPlugin = "2.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
