@@ -20,16 +20,13 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun CustomDropDownMenu(
-    label: String = ""
+    label: String = "",
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelect: (String) -> Unit
 ) {
-    val options = listOf("3000", "5000", "10000")
-
     val expanded = remember {
         mutableStateOf(false)
-    }
-
-    val selectedOption = remember {
-        mutableStateOf(options[0])
     }
 
     Column(
@@ -53,7 +50,7 @@ fun CustomDropDownMenu(
                 }
                 .padding(20.dp)
         ) {
-            Text(text = selectedOption.value, color = Color.DarkGray)
+            Text(text = selectedOption, color = Color.DarkGray)
 
             DropdownMenu(
                 expanded = expanded.value,
@@ -67,7 +64,7 @@ fun CustomDropDownMenu(
                             Text(text = option)
                         },
                         onClick = {
-                            selectedOption.value = option
+                            onOptionSelect(option)
                             expanded.value = false
                         }
                     )
