@@ -17,6 +17,7 @@ hiltAndroid = "2.56.2"
 hiltNavigationCompose = "1.2.0"
 navVersion = "2.9.0"
 serializationKotlin = "1.9.0"
+splashVersion = "1.0.1"
 
 kspPlugin = "2.2.0-2.0.2"
 hiltPlugin = "2.56.2"
@@ -48,6 +49,7 @@ androidx-hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", v
 androidx-hilt-navigation-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltNavigationCompose"}
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serializationKotlin" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navVersion" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
