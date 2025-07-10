@@ -1,5 +1,6 @@
 package ru.auskov.gpstracker
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.osmdroid.config.Configuration
 import ru.auskov.gpstracker.main.bottom_nav_bar.data.BottomMenuItem
 import ru.auskov.gpstracker.main.bottom_nav_bar.ui.BottomMenu
 import ru.auskov.gpstracker.main.home.data.HomeNavData
@@ -38,6 +40,7 @@ class MainActivity : ComponentActivity() {
                 viewModel.isLoading.value
             }
         }
+        setUpOSM(this)
         setContent {
             val navController = rememberNavController()
 
@@ -81,4 +84,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+private fun setUpOSM(context: Context) {
+    val config = Configuration.getInstance()
+    config.load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
+    config.userAgentValue = context.packageName
 }
