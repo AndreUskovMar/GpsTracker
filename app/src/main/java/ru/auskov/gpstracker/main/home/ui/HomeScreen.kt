@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -20,12 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
+import ru.auskov.gpstracker.components.RoundedCornerText
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
 
 @Composable
@@ -59,10 +60,13 @@ fun HomeScreen() {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            Text(text = "Time: 00:00:00", color = Color.Blue)
-            Text(text = "Average Speed: 0.0km/h", color = Color.Blue)
-            Text(text = "Speed: 0.0km/h", color = Color.Blue)
-            Text(text = "Distance: 0.0km", color = Color.Blue)
+            RoundedCornerText(text = "Time: 00:00:00")
+            Spacer(modifier = Modifier.height(3.dp))
+            RoundedCornerText(text = "Average Speed: 0.0km/h")
+            Spacer(modifier = Modifier.height(3.dp))
+            RoundedCornerText(text = "Speed: 0.0km/h")
+            Spacer(modifier = Modifier.height(3.dp))
+            RoundedCornerText(text = "Distance: 0.0km", fontSize = 20, fontWeight = FontWeight.Bold)
         }
 
         Column(
@@ -86,7 +90,7 @@ fun HomeScreen() {
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 onClick = {
-
+                    mapView.controller.animateTo(myLocationNewOverlay.value?.myLocation)
                 }
             ) {
                 Icon(
@@ -99,7 +103,7 @@ fun HomeScreen() {
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 onClick = {
-
+                    myLocationNewOverlay.value?.enableFollowLocation()
                 }
             ) {
                 Icon(
