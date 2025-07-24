@@ -16,6 +16,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 import org.osmdroid.config.Configuration
 import ru.auskov.gpstracker.main.bottom_nav_bar.data.BottomMenuItem
 import ru.auskov.gpstracker.main.bottom_nav_bar.ui.BottomMenu
@@ -29,6 +30,7 @@ import ru.auskov.gpstracker.main.track_viewer.data.TrackViewerNavData
 import ru.auskov.gpstracker.main.track_viewer.ui.TrackViewerScreen
 import ru.auskov.gpstracker.ui.theme.GpsTrackerTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     val viewModel: MainViewModel by viewModels()
 

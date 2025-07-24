@@ -3,10 +3,14 @@ package ru.auskov.gpstracker.utils
 import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.TimeZone
 
-@SuppressLint("ConstantLocale", "SimpleDateFormat")
+
 object TimeUtils {
-    private val timeFormatter = SimpleDateFormat("HH:mm:ss")
+    @SuppressLint("SimpleDateFormat")
+    private val timeFormatter = SimpleDateFormat("HH:mm:ss").apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
 
     fun getTimerTime(startTimeInMillis: Long): String {
         val elapsedTimeInMillis = System.currentTimeMillis() - startTimeInMillis

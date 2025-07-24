@@ -11,7 +11,7 @@ class TimerManager() {
     fun startTimer(task: TimerTask) {
         timer?.cancel()
         timer = Timer()
-        timer?.schedule(task, 10, 10)
+        timer?.schedule(task, 1000, 1000)
     }
 
     fun stopTimer() {

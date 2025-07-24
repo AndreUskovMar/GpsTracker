@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -30,7 +31,9 @@ import ru.auskov.gpstracker.components.RoundedCornerText
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     val mapView = remember {
         MapView(context).apply {
@@ -60,7 +63,7 @@ fun HomeScreen() {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            RoundedCornerText(text = "Time: 00:00:00")
+            RoundedCornerText(text = "Time: ${viewModel.timerState.value}")
             Spacer(modifier = Modifier.height(3.dp))
             RoundedCornerText(text = "Average Speed: 0.0km/h")
             Spacer(modifier = Modifier.height(3.dp))
@@ -77,7 +80,7 @@ fun HomeScreen() {
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 onClick = {
-
+                    myLocationNewOverlay.value?.enableFollowLocation()
                 }
             ) {
                 Icon(
@@ -103,7 +106,7 @@ fun HomeScreen() {
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 onClick = {
-                    myLocationNewOverlay.value?.enableFollowLocation()
+                    viewModel.startTimer(System.currentTimeMillis())
                 }
             ) {
                 Icon(
