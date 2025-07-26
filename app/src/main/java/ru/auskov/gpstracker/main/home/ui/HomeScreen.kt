@@ -1,5 +1,6 @@
 package ru.auskov.gpstracker.main.home.ui
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.RoundedCornerText
+import ru.auskov.gpstracker.location.LocationService
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
 
 @Composable
@@ -93,6 +95,9 @@ fun HomeScreen(
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 onClick = {
+                    val intent = Intent(context, LocationService::class.java)
+                    context.stopService(intent)
+
                     mapView.controller.animateTo(myLocationNewOverlay.value?.myLocation)
                 }
             ) {
@@ -106,6 +111,10 @@ fun HomeScreen(
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 onClick = {
+                    val intent = Intent(context, LocationService::class.java)
+                    intent.putExtra("test", "test")
+                    context.startService(intent)
+
                     viewModel.startTimer(System.currentTimeMillis())
                 }
             ) {
