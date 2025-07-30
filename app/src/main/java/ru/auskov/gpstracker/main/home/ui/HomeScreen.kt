@@ -1,6 +1,5 @@
 package ru.auskov.gpstracker.main.home.ui
 
-import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +12,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,8 +30,10 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.RoundedCornerText
-import ru.auskov.gpstracker.location.LocationService
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
+import ru.auskov.gpstracker.main.home.map_utils.isLocationServiceRunning
+import ru.auskov.gpstracker.main.home.map_utils.startLocationService
+import ru.auskov.gpstracker.main.home.map_utils.stopLocationService
 
 @Composable
 fun HomeScreen(
@@ -49,9 +52,17 @@ fun HomeScreen(
         mutableStateOf<MyLocationNewOverlay?>(null)
     }
 
+    var isServiceRunning by remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(Unit) {
         myLocationNewOverlay.value = initMyLocationOverlay(mapView)
         mapView.overlays.add(myLocationNewOverlay.value)
+    }
+
+    LaunchedEffect(Unit) {
+        isServiceRunning = isLocationServiceRunning(context)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -95,9 +106,6 @@ fun HomeScreen(
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 onClick = {
-                    val intent = Intent(context, LocationService::class.java)
-                    context.stopService(intent)
-
                     mapView.controller.animateTo(myLocationNewOverlay.value?.myLocation)
                 }
             ) {
@@ -111,16 +119,24 @@ fun HomeScreen(
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 onClick = {
-                    val intent = Intent(context, LocationService::class.java)
-                    intent.putExtra("test", "test")
-                    context.startService(intent)
-
-                    viewModel.startTimer(System.currentTimeMillis())
+                    if (isServiceRunning) {
+                        stopLocationService(context)
+                        viewModel.stopTimer()
+                        isServiceRunning = false
+                    } else {
+                        startLocationService(context)
+                        viewModel.startTimer(System.currentTimeMillis())
+                        isServiceRunning = true
+                    }
                 }
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_play),
-                    contentDescription = "play"
+                    painter = painterResource(if (isServiceRunning) {
+                        R.drawable.ic_stop
+                    } else {
+                        R.drawable.ic_play
+                    }),
+                    contentDescription = "play_and_stop"
                 )
             }
         }
