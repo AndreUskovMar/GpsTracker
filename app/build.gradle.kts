@@ -14,6 +14,7 @@ android {
     defaultConfig {
         applicationId = "ru.auskov.gpstracker"
         minSdk = 31
+        //noinspection OldTargetApi
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -61,6 +62,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.core.splashscreen)
+
+    implementation(libs.play.services.location)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
