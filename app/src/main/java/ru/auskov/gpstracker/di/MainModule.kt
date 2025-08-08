@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import ru.auskov.gpstracker.location.LocationDataSharer
 import ru.auskov.gpstracker.utils.TimerManager
 import javax.inject.Singleton
 
@@ -14,5 +15,11 @@ object MainModule {
     @Singleton
     fun provideTimeManager(): TimerManager {
         return TimerManager()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationFlow(): LocationDataSharer {
+        return LocationDataSharer()
     }
 }

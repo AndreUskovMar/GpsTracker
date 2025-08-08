@@ -18,19 +18,49 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.osmdroid.util.GeoPoint
 import ru.auskov.gpstracker.MainActivity
 import ru.auskov.gpstracker.R
+import ru.auskov.gpstracker.location.data.LocationData
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LocationService : Service() {
+    @Inject
+    lateinit var locationDataSharer: LocationDataSharer
+
     private val updateLocationTime = 3000L
     private val updateLocationPriority = Priority.PRIORITY_HIGH_ACCURACY
     private lateinit var locationProviderClient: FusedLocationProviderClient
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
-            val location = locationResult.lastLocation
-            Log.d("MyLog", "Location: ${location?.latitude}, ${location?.longitude}")
             super.onLocationResult(locationResult)
+            val location = locationResult.lastLocation
+
+            if (location != null) {
+                Log.d("MyLog", "Location: ${location.latitude}, ${location.longitude}")
+                val geoPoint = GeoPoint(
+                    location.latitude,
+                    location.longitude,
+                    location.altitude
+                )
+
+                val locationData = LocationData(
+                    location.speed,
+                    0.0F,
+                    0L,
+                    geoPoint
+                )
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    locationDataSharer.updateLocation(locationData)
+                }
+            }
         }
     }
 
