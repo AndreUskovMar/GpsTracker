@@ -3,13 +3,14 @@ package ru.auskov.gpstracker.main.home.map_utils
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.core.graphics.drawable.toBitmap
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.location.LocationService
+
+const val START_TIME = "start_time"
 
 fun initMyLocationOverlay(mapView: MapView): MyLocationNewOverlay {
     val gpsProvider = GpsMyLocationProvider(mapView.context)
@@ -23,8 +24,10 @@ fun initMyLocationOverlay(mapView: MapView): MyLocationNewOverlay {
     return myLocationNewOverlay
 }
 
-fun startLocationService(context: Context) {
-    val intent = Intent(context, LocationService::class.java)
+fun startLocationService(context: Context, startTime: Long) {
+    val intent = Intent(context, LocationService::class.java).apply {
+        putExtra(START_TIME, startTime)
+    }
     context.startForegroundService(intent)
 }
 

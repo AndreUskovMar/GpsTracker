@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
@@ -26,6 +27,7 @@ import org.osmdroid.util.GeoPoint
 import ru.auskov.gpstracker.MainActivity
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.location.data.LocationData
+import ru.auskov.gpstracker.main.home.map_utils.START_TIME
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -36,6 +38,11 @@ class LocationService : Service() {
     private val updateLocationTime = 3000L
     private val updateLocationPriority = Priority.PRIORITY_HIGH_ACCURACY
     private lateinit var locationProviderClient: FusedLocationProviderClient
+
+    private var distance = 0f
+
+    private var lastLocation: Location? = null
+    private var startTime = 0L
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
@@ -50,16 +57,24 @@ class LocationService : Service() {
                     location.altitude
                 )
 
+                val newDistance = lastLocation?.distanceTo(location) ?: 0f
+
+                if (newDistance < 5f) {
+                    distance += newDistance
+                }
+
                 val locationData = LocationData(
-                    location.speed,
-                    0.0F,
-                    0L,
+                    speed = location.speed,
+                    distance = distance,
+                    startServiceTime = startTime,
                     geoPoint
                 )
 
                 CoroutineScope(Dispatchers.IO).launch {
                     locationDataSharer.updateLocation(locationData)
                 }
+
+                lastLocation = location
             }
         }
     }
@@ -81,7 +96,7 @@ class LocationService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("MyLog", "Service onStartCommand ${intent?.getStringExtra("test")}")
+        startTime = intent?.getLongExtra(START_TIME, -1L) ?: -1L
         showNotification()
         startLocationUpdates()
         return START_STICKY

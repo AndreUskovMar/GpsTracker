@@ -13,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,6 +57,18 @@ fun HomeScreen(
         mutableStateOf(false)
     }
 
+    var distance by remember {
+        mutableStateOf("0.0")
+    }
+
+    var speed by remember {
+        mutableStateOf("0.0")
+    }
+
+    var startTime by remember {
+        mutableLongStateOf(-1L)
+    }
+
     LaunchedEffect(Unit) {
         myLocationNewOverlay.value = initMyLocationOverlay(mapView)
         mapView.overlays.add(myLocationNewOverlay.value)
@@ -63,6 +76,14 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         isServiceRunning = isLocationServiceRunning(context)
+        viewModel.locationFlow.collect { locationData ->
+            distance = locationData.distance.toString()
+            speed = locationData.speed.toString()
+            if (isServiceRunning && startTime == -1L) {
+                startTime = locationData.startServiceTime
+                viewModel.startTimer(startTime)
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -80,9 +101,9 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(3.dp))
             RoundedCornerText(text = "Average Speed: 0.0km/h")
             Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "Speed: 0.0km/h")
+            RoundedCornerText(text = "Speed: ${speed}km/h")
             Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "Distance: 0.0km", fontSize = 20, fontWeight = FontWeight.Bold)
+            RoundedCornerText(text = "Distance: ${distance}m", fontSize = 20, fontWeight = FontWeight.Bold)
         }
 
         Column(
@@ -124,9 +145,10 @@ fun HomeScreen(
                         viewModel.stopTimer()
                         isServiceRunning = false
                     } else {
-                        startLocationService(context)
-                        viewModel.startTimer(System.currentTimeMillis())
                         isServiceRunning = true
+                        val startTimeInMillis = System.currentTimeMillis()
+                        viewModel.startTimer(startTimeInMillis)
+                        startLocationService(context, startTimeInMillis)
                     }
                 }
             ) {
