@@ -1,5 +1,6 @@
 package ru.auskov.gpstracker.main.home.map_utils
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
@@ -44,4 +45,9 @@ fun isLocationServiceRunning(context: Context): Boolean {
     }
 
     return false
+}
+
+@SuppressLint("DefaultLocale")
+fun getAverageSpeed(distance: Float, startTime: Long): String {
+    return String.format("%.1f", 3.6f * distance / ((System.currentTimeMillis() - startTime) / 1000f))
 }

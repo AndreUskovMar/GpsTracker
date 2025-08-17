@@ -1,5 +1,6 @@
 package ru.auskov.gpstracker.main.home.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,11 +32,13 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.RoundedCornerText
+import ru.auskov.gpstracker.main.home.map_utils.getAverageSpeed
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
 import ru.auskov.gpstracker.main.home.map_utils.isLocationServiceRunning
 import ru.auskov.gpstracker.main.home.map_utils.startLocationService
 import ru.auskov.gpstracker.main.home.map_utils.stopLocationService
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
@@ -58,11 +61,15 @@ fun HomeScreen(
     }
 
     var distance by remember {
-        mutableStateOf("0.0")
+        mutableStateOf("0,0")
     }
 
     var speed by remember {
-        mutableStateOf("0.0")
+        mutableStateOf("0,0")
+    }
+
+    var averageSpeed by remember {
+        mutableStateOf("0,0")
     }
 
     var startTime by remember {
@@ -77,8 +84,9 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         isServiceRunning = isLocationServiceRunning(context)
         viewModel.locationFlow.collect { locationData ->
-            distance = locationData.distance.toString()
-            speed = locationData.speed.toString()
+            distance = String.format("%.1f", locationData.distance / 1000f)
+            speed = String.format("%.1f", 3.6 * locationData.speed)
+            averageSpeed = getAverageSpeed(locationData.distance, startTime)
             if (isServiceRunning && startTime == -1L) {
                 startTime = locationData.startServiceTime
                 viewModel.startTimer(startTime)
@@ -99,11 +107,11 @@ fun HomeScreen(
         Column {
             RoundedCornerText(text = "Time: ${viewModel.timerState.value}")
             Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "Average Speed: 0.0km/h")
+            RoundedCornerText(text = "Average Speed: ${averageSpeed}km/h")
             Spacer(modifier = Modifier.height(3.dp))
             RoundedCornerText(text = "Speed: ${speed}km/h")
             Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "Distance: ${distance}m", fontSize = 20, fontWeight = FontWeight.Bold)
+            RoundedCornerText(text = "Distance: ${distance}km", fontSize = 20, fontWeight = FontWeight.Bold)
         }
 
         Column(
