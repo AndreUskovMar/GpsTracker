@@ -14,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +28,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.RoundedCornerText
@@ -48,7 +48,7 @@ fun HomeScreen(
         MapView(context).apply {
             setTileSource(TileSourceFactory.MAPNIK)
             setMultiTouchControls(true)
-            controller.setZoom(5.0)
+            controller.setZoom(20.0)
         }
     }
 
@@ -72,24 +72,42 @@ fun HomeScreen(
         mutableStateOf("0,0")
     }
 
-    var startTime by remember {
-        mutableLongStateOf(-1L)
+    var isStartTracking by remember {
+        mutableStateOf(false)
+    }
+
+    var isPolylineResume by remember {
+        mutableStateOf(false)
+    }
+
+    var myPolyline by remember {
+        mutableStateOf<Polyline?>(null)
     }
 
     LaunchedEffect(Unit) {
+        myPolyline = Polyline()
         myLocationNewOverlay.value = initMyLocationOverlay(mapView)
+        mapView.overlays.add(myPolyline)
         mapView.overlays.add(myLocationNewOverlay.value)
-    }
-
-    LaunchedEffect(Unit) {
         isServiceRunning = isLocationServiceRunning(context)
         viewModel.locationFlow.collect { locationData ->
             distance = String.format("%.1f", locationData.distance / 1000f)
             speed = String.format("%.1f", 3.6 * locationData.speed)
-            averageSpeed = getAverageSpeed(locationData.distance, startTime)
-            if (isServiceRunning && startTime == -1L) {
-                startTime = locationData.startServiceTime
-                viewModel.startTimer(startTime)
+            averageSpeed = getAverageSpeed(locationData.distance, locationData.startServiceTime)
+
+            if (isServiceRunning && !isStartTracking) {
+                isStartTracking = true
+                viewModel.startTimer(locationData.startServiceTime)
+            }
+            if (isServiceRunning) {
+                if (isPolylineResume) {
+                    myPolyline?.addPoint(locationData.geoPoints.last())
+                } else {
+                    isPolylineResume = true
+                    locationData.geoPoints.forEach { geoPoint ->
+                        myPolyline?.addPoint(geoPoint)
+                    }
+                }
             }
         }
     }

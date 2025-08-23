@@ -44,6 +44,8 @@ class LocationService : Service() {
     private var lastLocation: Location? = null
     private var startTime = 0L
 
+    private val geoPoints = mutableListOf<GeoPoint>()
+
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
@@ -57,6 +59,8 @@ class LocationService : Service() {
                     location.altitude
                 )
 
+                geoPoints.add(geoPoint)
+
                 val newDistance = lastLocation?.distanceTo(location) ?: 0f
 
                 if (newDistance < 5f) {
@@ -67,7 +71,7 @@ class LocationService : Service() {
                     speed = location.speed,
                     distance = distance,
                     startServiceTime = startTime,
-                    geoPoint
+                    geoPoints
                 )
 
                 CoroutineScope(Dispatchers.IO).launch {
