@@ -18,13 +18,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ru.auskov.gpstracker.components.CustomDropDownMenu
 import ru.auskov.gpstracker.main.settings.data.ColorPickerData
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    viewModel: SettingsScreenViewModel = hiltViewModel()
+) {
     val optionsUpdateTime = listOf("3000", "5000", "10000")
-    val optionsPriority = listOf("Low", "Medium", "High")
+    val optionsPriority = listOf(
+        "PRIORITY_HIGH_ACCURACY",
+        "PRIORITY_PASSIVE",
+        "PRIORITY_LOW_POWER",
+        "PRIORITY_BALANCED_POWER_ACCURACY"
+    )
     val optionsTrackLineWidth = listOf("5", "10", "15")
     val optionsTrackLineColor = listOf(
         ColorPickerData(color = Color.Cyan),
@@ -35,15 +43,15 @@ fun SettingsScreen() {
     )
 
     val selectedUpdateTime = remember {
-        mutableStateOf(optionsUpdateTime[0])
+        mutableStateOf(viewModel.getLocationUpdateInterval())
     }
 
     val selectedPriority = remember {
-        mutableStateOf(optionsPriority[0])
+        mutableStateOf(viewModel.getPriority())
     }
 
     val selectedTrackLineWidth = remember {
-        mutableStateOf(optionsTrackLineWidth[0])
+        mutableStateOf(viewModel.getTrackLineWidth())
     }
 
     val colorListState = remember {
@@ -59,6 +67,7 @@ fun SettingsScreen() {
             selectedOption = selectedUpdateTime.value
         ) { selectedOption ->
             selectedUpdateTime.value = selectedOption
+            viewModel.saveLocationUpdateInterval(selectedOption)
         }
         CustomDropDownMenu(
             "Priority",
@@ -66,6 +75,7 @@ fun SettingsScreen() {
             selectedOption = selectedPriority.value
         ) { selectedOption ->
             selectedPriority.value = selectedOption
+            viewModel.savePriority(selectedOption)
         }
         CustomDropDownMenu(
             "Track line width",
@@ -73,6 +83,7 @@ fun SettingsScreen() {
             selectedOption = selectedTrackLineWidth.value
         ) { selectedOption ->
             selectedTrackLineWidth.value = selectedOption
+            viewModel.saveTrackLineWidth(selectedOption)
         }
 
         Text(
