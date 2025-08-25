@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -85,7 +86,10 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        myPolyline = Polyline()
+        myPolyline = Polyline().apply {
+            outlinePaint.color = Color(viewModel.getColor().toULong()).toArgb()
+            outlinePaint.strokeWidth = viewModel.getTrackLineWidth().toFloat()
+        }
         myLocationNewOverlay.value = initMyLocationOverlay(mapView)
         mapView.overlays.add(myPolyline)
         mapView.overlays.add(myLocationNewOverlay.value)
@@ -172,9 +176,11 @@ fun HomeScreen(
                         isServiceRunning = false
                     } else {
                         isServiceRunning = true
+                        val priority = viewModel.getPriority()
+                        val updateTime = viewModel.getLocationUpdateInterval().toLong()
                         val startTimeInMillis = System.currentTimeMillis()
                         viewModel.startTimer(startTimeInMillis)
-                        startLocationService(context, startTimeInMillis)
+                        startLocationService(context, startTimeInMillis, updateTime, priority)
                     }
                 }
             ) {

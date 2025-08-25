@@ -28,6 +28,8 @@ import ru.auskov.gpstracker.MainActivity
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.location.data.LocationData
 import ru.auskov.gpstracker.main.home.map_utils.START_TIME
+import ru.auskov.gpstracker.main.home.map_utils.UPDATE_TIME
+import ru.auskov.gpstracker.main.home.map_utils.PRIORITY
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,8 +37,6 @@ class LocationService : Service() {
     @Inject
     lateinit var locationDataSharer: LocationDataSharer
 
-    private val updateLocationTime = 3000L
-    private val updateLocationPriority = Priority.PRIORITY_HIGH_ACCURACY
     private lateinit var locationProviderClient: FusedLocationProviderClient
 
     private var distance = 0f
@@ -101,8 +101,11 @@ class LocationService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startTime = intent?.getLongExtra(START_TIME, -1L) ?: -1L
+        val updateTime = intent?.getLongExtra(UPDATE_TIME, 5000L) ?: 5000L
+        val priority = intent?.getIntExtra(PRIORITY, Priority.PRIORITY_HIGH_ACCURACY)
+            ?: Priority.PRIORITY_HIGH_ACCURACY
         showNotification()
-        startLocationUpdates()
+        startLocationUpdates(priority, updateTime)
         return START_STICKY
     }
 
@@ -111,9 +114,9 @@ class LocationService : Service() {
             .getFusedLocationProviderClient(this)
     }
 
-    private fun startLocationUpdates() {
+    private fun startLocationUpdates(locationPriority: Int, locationTime: Long) {
         val locationRequest = LocationRequest.Builder(
-            updateLocationPriority, updateLocationTime,
+            locationPriority, locationTime,
         ).build()
 
         if (ActivityCompat.checkSelfPermission(

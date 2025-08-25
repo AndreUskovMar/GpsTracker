@@ -9,6 +9,7 @@ const val MAIN_PREF = "main_pref"
 const val LOCATION_UPDATE_INTERVAL = "location_update_interval"
 const val TRACK_LINE_WIDTH = "track_line_width"
 const val PRIORITY = "priority"
+const val TRACK_COLOR = "track_color"
 
 @Singleton
 class SettingsPreferencesManager(

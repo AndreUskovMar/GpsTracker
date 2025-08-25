@@ -55,7 +55,9 @@ fun SettingsScreen(
     }
 
     val colorListState = remember {
-        mutableStateOf(optionsTrackLineColor)
+        mutableStateOf(optionsTrackLineColor.map { colorPickerData ->
+            colorPickerData.copy(isChecked = colorPickerData.color.value.toString() == viewModel.getColor())
+        })
     }
 
     Column(
@@ -96,14 +98,19 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyRow(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-            items(colorListState.value) { item ->
-                ColorPickerItem(item) {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp)
+        ) {
+            items(colorListState.value) { colorPickerData ->
+                ColorPickerItem(colorPickerData) {
                     colorListState.value = colorListState.value.map {
                         it.copy(
-                            isChecked = it.color == item.color
+                            isChecked = it.color == colorPickerData.color
                         )
                     }
+                    viewModel.saveColor(colorPickerData.color)
                 }
 
                 Spacer(modifier = Modifier.width(10.dp))
