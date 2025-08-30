@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ru.auskov.gpstracker.db.MainDb
 import ru.auskov.gpstracker.location.LocationDataSharer
 import ru.auskov.gpstracker.utils.LOCATION_UPDATE_INTERVAL
 import ru.auskov.gpstracker.utils.PRIORITY
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val timerManager: TimerManager,
     private val settingsPreferences: SettingsPreferencesManager,
+    private val mainDb: MainDb,
     locationDataSharer: LocationDataSharer,
 ) : ViewModel() {
     val timerState = mutableStateOf("00:00:00")
