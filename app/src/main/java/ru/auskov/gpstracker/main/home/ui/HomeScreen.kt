@@ -1,6 +1,7 @@
 package ru.auskov.gpstracker.main.home.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.RoundedCornerText
+import ru.auskov.gpstracker.components.SaveTrackDialog
 import ru.auskov.gpstracker.main.home.map_utils.getAverageSpeed
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
 import ru.auskov.gpstracker.main.home.map_utils.isLocationServiceRunning
@@ -83,6 +85,10 @@ fun HomeScreen(
 
     var myPolyline by remember {
         mutableStateOf<Polyline?>(null)
+    }
+
+    var isTrackDialogVisible by remember {
+        mutableStateOf(false)
     }
 
     LaunchedEffect(Unit) {
@@ -174,6 +180,7 @@ fun HomeScreen(
                         stopLocationService(context)
                         viewModel.stopTimer()
                         isServiceRunning = false
+                        isTrackDialogVisible = true
                     } else {
                         isServiceRunning = true
                         val priority = viewModel.getPriority()
@@ -195,4 +202,16 @@ fun HomeScreen(
             }
         }
     }
+
+    SaveTrackDialog(
+        title = "Do you want to save track?",
+        isVisible = isTrackDialogVisible,
+        onDismiss = {
+            isTrackDialogVisible = false
+        },
+        onSubmit = { trackName ->
+            isTrackDialogVisible = false
+            Log.d("MyLog", trackName)
+        }
+    )
 }

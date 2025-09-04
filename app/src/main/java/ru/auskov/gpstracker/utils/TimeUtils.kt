@@ -12,10 +12,20 @@ object TimeUtils {
         timeZone = TimeZone.getTimeZone("UTC")
     }
 
+    @SuppressLint("SimpleDateFormat")
+    private val trackNameFormatter = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
+
     fun getTimerTime(startTimeInMillis: Long): String {
         val elapsedTimeInMillis = System.currentTimeMillis() - startTimeInMillis
         val cv = Calendar.getInstance()
         cv.timeInMillis = elapsedTimeInMillis
         return timeFormatter.format(cv.time)
+    }
+
+    fun getTrackTime(): String {
+        val cv = Calendar.getInstance()
+        return trackNameFormatter.format(cv.time)
     }
 }
