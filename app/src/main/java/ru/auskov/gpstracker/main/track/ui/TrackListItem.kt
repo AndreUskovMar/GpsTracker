@@ -17,20 +17,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.auskov.gpstracker.main.track.data.TrackData
 
 @Composable
-fun TrackListItem() {
+fun TrackListItem(trackData: TrackData) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier
             .fillMaxWidth()
             .padding(15.dp)) {
-            Text(text = "Date: 08-07-25", color = Color.Blue)
+            Text(text = "Date: ${trackData.date}", color = Color.Blue)
             Text(
-                text = "Track Name", fontWeight = FontWeight.Bold,
+                text = trackData.name, fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
             Text(
-                text = "Time: 21:40:10",
+                text = "Time: ${trackData.time}",
                 color = Color.Magenta
             )
             Row(
@@ -38,7 +39,7 @@ fun TrackListItem() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Distance: 12km",
+                    text = "Distance: ${trackData.distance}km",
                     modifier = Modifier.weight(1f),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp

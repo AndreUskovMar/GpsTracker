@@ -27,7 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
@@ -35,11 +35,14 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.RoundedCornerText
 import ru.auskov.gpstracker.components.SaveTrackDialog
+import ru.auskov.gpstracker.main.home.map_utils.geoPointsToString
 import ru.auskov.gpstracker.main.home.map_utils.getAverageSpeed
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
 import ru.auskov.gpstracker.main.home.map_utils.isLocationServiceRunning
 import ru.auskov.gpstracker.main.home.map_utils.startLocationService
 import ru.auskov.gpstracker.main.home.map_utils.stopLocationService
+import ru.auskov.gpstracker.main.track.data.TrackData
+import ru.auskov.gpstracker.utils.TimeUtils
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -212,6 +215,15 @@ fun HomeScreen(
         onSubmit = { trackName ->
             isTrackDialogVisible = false
             Log.d("MyLog", trackName)
+            val trackData = TrackData(
+                name = trackName,
+                date = TimeUtils.getTrackTime(),
+                distance = distance,
+                averageSpeed = averageSpeed,
+                geoPoints = geoPointsToString(myPolyline?.actualPoints!!)
+            )
+
+            viewModel.insertTrack(trackData)
         }
     )
 }

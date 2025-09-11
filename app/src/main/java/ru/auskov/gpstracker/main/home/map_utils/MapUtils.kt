@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.gms.location.Priority
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -68,4 +69,17 @@ fun getPriority(priority: String): Int {
         "PRIORITY_BALANCED_POWER_ACCURACY" -> Priority.PRIORITY_BALANCED_POWER_ACCURACY
         else -> Priority.PRIORITY_HIGH_ACCURACY
     }
+}
+
+fun geoPointsToString(geoPoints: List<GeoPoint>?): String {
+    if (geoPoints == null) return ""
+    val stringBuilder = StringBuilder()
+    geoPoints.forEach { geoPoint ->
+        if (stringBuilder.isEmpty()) {
+            stringBuilder.append("${geoPoint.latitude},${geoPoint.longitude}")
+        } else {
+            stringBuilder.append("/${geoPoint.latitude},${geoPoint.longitude}")
+        }
+    }
+    return stringBuilder.toString()
 }

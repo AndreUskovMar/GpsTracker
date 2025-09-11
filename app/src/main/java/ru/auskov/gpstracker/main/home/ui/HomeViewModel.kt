@@ -3,9 +3,13 @@ package ru.auskov.gpstracker.main.home.ui
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.auskov.gpstracker.db.MainDb
 import ru.auskov.gpstracker.location.LocationDataSharer
+import ru.auskov.gpstracker.main.track.data.TrackData
 import ru.auskov.gpstracker.utils.LOCATION_UPDATE_INTERVAL
 import ru.auskov.gpstracker.utils.PRIORITY
 import ru.auskov.gpstracker.utils.SettingsPreferencesManager
@@ -53,5 +57,9 @@ class HomeViewModel @Inject constructor(
 
     fun getTrackLineWidth(): String {
         return settingsPreferences.getString(TRACK_LINE_WIDTH, "10")
+    }
+
+    fun insertTrack(trackData: TrackData) = viewModelScope.launch(Dispatchers.IO) {
+        mainDb.trackDao.insertTrack(trackData.copy(time = timerState.value))
     }
 }
