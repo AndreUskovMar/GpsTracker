@@ -34,7 +34,7 @@ import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.RoundedCornerText
-import ru.auskov.gpstracker.components.SaveTrackDialog
+import ru.auskov.gpstracker.components.TrackDialog
 import ru.auskov.gpstracker.main.home.map_utils.geoPointsToString
 import ru.auskov.gpstracker.main.home.map_utils.getAverageSpeed
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
@@ -206,7 +206,7 @@ fun HomeScreen(
         }
     }
 
-    SaveTrackDialog(
+    TrackDialog(
         title = "Do you want to save track?",
         isVisible = isTrackDialogVisible,
         onDismiss = {

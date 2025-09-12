@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import ru.auskov.gpstracker.main.track.data.TrackData
 
 @Composable
-fun TrackListItem(trackData: TrackData) {
+fun TrackListItem(trackData: TrackData, onDelete: () -> Unit = {}) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier
             .fillMaxWidth()
@@ -44,7 +44,9 @@ fun TrackListItem(trackData: TrackData) {
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    onDelete()
+                }) {
                     Icon(Icons.Default.Delete, contentDescription = "trash")
                 }
             }

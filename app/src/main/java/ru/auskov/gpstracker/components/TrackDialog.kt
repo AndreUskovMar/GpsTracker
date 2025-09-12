@@ -15,9 +15,10 @@ import ru.auskov.gpstracker.utils.TimeUtils
 
 
 @Composable
-fun SaveTrackDialog(
+fun TrackDialog(
     title: String = "",
     isVisible: Boolean = true,
+    dialogType: DialogType = DialogType.SAVE,
     onDismiss: () -> Unit = {},
     onSubmit: (trackName: String) -> Unit = {}
 ) {
@@ -31,20 +32,24 @@ fun SaveTrackDialog(
                 Text(text = title, fontWeight = FontWeight.Bold)
             },
             text = {
-                TextField(
-                    value = trackName.value,
-                    label = {
-                        Text(text = "Enter track name:")
-                    },
-                    onValueChange = {
-                        trackName.value = it
-                    },
-                    colors = TextFieldDefaults.colors(
-                        disabledContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent
+                if (dialogType == DialogType.SAVE) {
+                    TextField(
+                        value = trackName.value,
+                        label = {
+                            Text(text = "Enter track name:")
+                        },
+                        onValueChange = {
+                            trackName.value = it
+                        },
+                        colors = TextFieldDefaults.colors(
+                            disabledContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent
+                        )
                     )
-                )
+                } else {
+                    Text(text = "Are you sure you want to delete track?")
+                }
             },
             onDismissRequest = {
                 onDismiss()
@@ -74,4 +79,8 @@ fun SaveTrackDialog(
             }
         )
     }
+}
+
+enum class DialogType {
+    DELETE, SAVE
 }
