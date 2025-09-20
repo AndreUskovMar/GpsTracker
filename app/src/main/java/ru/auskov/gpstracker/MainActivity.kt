@@ -16,6 +16,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 import org.osmdroid.config.Configuration
 import ru.auskov.gpstracker.main.bottom_nav_bar.data.BottomMenuItem
@@ -76,10 +77,20 @@ class MainActivity : ComponentActivity() {
                             SettingsScreen()
                         }
                         composable<TrackNavData> {
-                            TrackScreen()
+                            TrackScreen { trackData ->
+                                navController.navigate(TrackViewerNavData(
+                                    trackData.name,
+                                    trackData.date,
+                                    trackData.distance,
+                                    trackData.time,
+                                    trackData.averageSpeed,
+                                    trackData.geoPoints
+                                ))
+                            }
                         }
-                        composable<TrackViewerNavData> {
-                            TrackViewerScreen()
+                        composable<TrackViewerNavData> { navBackStackEntry ->
+                            val navData = navBackStackEntry.toRoute<TrackViewerNavData>()
+                            TrackViewerScreen(navData)
                         }
                     }
                 }

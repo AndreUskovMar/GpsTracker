@@ -3,4 +3,11 @@ package ru.auskov.gpstracker.main.track_viewer.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-object TrackViewerNavData
+data class TrackViewerNavData (
+    val name: String,
+    val date: String,
+    val distance: String,
+    val time: String = "",
+    val averageSpeed: String,
+    val geoPoints: String
+)

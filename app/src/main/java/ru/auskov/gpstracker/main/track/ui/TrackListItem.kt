@@ -1,5 +1,6 @@
 package ru.auskov.gpstracker.main.track.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,11 +21,17 @@ import androidx.compose.ui.unit.sp
 import ru.auskov.gpstracker.main.track.data.TrackData
 
 @Composable
-fun TrackListItem(trackData: TrackData, onDelete: () -> Unit = {}) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(15.dp)) {
+fun TrackListItem(trackData: TrackData, onDelete: () -> Unit = {}, onClick: () -> Unit) {
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .clickable {
+            onClick()
+        }) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp)
+        ) {
             Text(text = "Date: ${trackData.date}", color = Color.Blue)
             Text(
                 text = trackData.name, fontWeight = FontWeight.Bold,

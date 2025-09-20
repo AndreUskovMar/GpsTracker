@@ -20,10 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ru.auskov.gpstracker.components.DialogType
 import ru.auskov.gpstracker.components.TrackDialog
+import ru.auskov.gpstracker.main.track.data.TrackData
 
 @Composable
 fun TrackScreen(
-    viewModel: TrackViewModel = hiltViewModel()
+    viewModel: TrackViewModel = hiltViewModel(),
+    onTrackClick: (TrackData) -> Unit
 ) {
     val trackList = viewModel.trackList.collectAsState(initial = emptyList())
     var isTrackDialogVisible by remember {
@@ -34,13 +36,21 @@ fun TrackScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 10.dp)
         ) {
             items(trackList.value) { trackData ->
-                TrackListItem(trackData, onDelete = {
-                    viewModel.trackToDelete = trackData
-                    isTrackDialogVisible = true
-                })
+                TrackListItem(
+                    trackData,
+                    onDelete = {
+                        viewModel.trackToDelete = trackData
+                        isTrackDialogVisible = true
+                    },
+                    onClick = {
+                        onTrackClick(trackData)
+                    }
+                )
                 Spacer(modifier = Modifier.height(10.dp))
             }
         }
