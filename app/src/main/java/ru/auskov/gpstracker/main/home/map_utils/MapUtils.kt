@@ -4,10 +4,13 @@ import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.gms.location.Priority
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
@@ -82,4 +85,23 @@ fun geoPointsToString(geoPoints: List<GeoPoint>?): String {
         }
     }
     return stringBuilder.toString()
+}
+
+fun getPolylinesFromString(color: ULong, lineWidth: Float, geoPointsString: String): Polyline {
+    val myPolyline = Polyline().apply {
+        outlinePaint.color = Color(color).toArgb()
+        outlinePaint.strokeWidth = lineWidth
+    }
+
+    geoPointsString.split("/").forEach { geoData ->
+        val coordinates = geoData.split(",")
+        val geoPoint = GeoPoint(
+            coordinates[0].toDouble(),
+            coordinates[1].toDouble()
+        )
+
+        myPolyline.addPoint(geoPoint)
+    }
+
+    return myPolyline
 }

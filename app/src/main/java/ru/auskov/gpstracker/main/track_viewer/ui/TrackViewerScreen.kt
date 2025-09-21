@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +31,7 @@ import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.RoundedCornerText
+import ru.auskov.gpstracker.main.home.map_utils.getPolylinesFromString
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
 import ru.auskov.gpstracker.main.track_viewer.data.TrackViewerNavData
 
@@ -58,10 +58,11 @@ fun TrackViewerScreen(
     }
 
     LaunchedEffect(Unit) {
-        myPolyline = Polyline().apply {
-            outlinePaint.color = Color(viewModel.getColor().toULong()).toArgb()
-            outlinePaint.strokeWidth = viewModel.getTrackLineWidth().toFloat()
-        }
+        myPolyline = getPolylinesFromString(
+            viewModel.getColor().toULong(),
+            viewModel.getTrackLineWidth().toFloat(),
+            navData.geoPoints
+        )
         myLocationNewOverlay.value = initMyLocationOverlay(mapView)
         mapView.overlays.add(myPolyline)
         mapView.overlays.add(myLocationNewOverlay.value)
@@ -77,6 +78,12 @@ fun TrackViewerScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
+                RoundedCornerText(
+                    text = "Track: ${navData.name}",
+                    fontSize = 20,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(3.dp))
                 RoundedCornerText(text = "Time: ${navData.time}")
                 Spacer(modifier = Modifier.height(3.dp))
                 RoundedCornerText(text = "Average Speed: ${navData.averageSpeed}km/h")
