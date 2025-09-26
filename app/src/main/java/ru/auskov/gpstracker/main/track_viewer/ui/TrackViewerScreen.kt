@@ -27,6 +27,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
@@ -66,6 +67,18 @@ fun TrackViewerScreen(
         myLocationNewOverlay.value = initMyLocationOverlay(mapView)
         mapView.overlays.add(myPolyline)
         mapView.overlays.add(myLocationNewOverlay.value)
+        val startMarker = Marker(mapView).apply {
+            position = myPolyline?.actualPoints?.first()
+            icon = context.getDrawable(R.drawable.ic_follow_location)
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        }
+        val finishMarker = Marker(mapView).apply {
+            position = myPolyline?.actualPoints?.last()
+            icon = context.getDrawable(R.drawable.ic_follow_location)
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        }
+        mapView.overlays.add(startMarker)
+        mapView.overlays.add(finishMarker)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -105,7 +118,8 @@ fun TrackViewerScreen(
                     containerColor = Color.White,
                     contentColor = Color.Black,
                     onClick = {
-
+                        myLocationNewOverlay.value?.disableFollowLocation()
+                        mapView.controller.animateTo(myPolyline?.actualPoints?.first())
                     }
                 ) {
                     Icon(
