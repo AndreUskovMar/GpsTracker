@@ -15,9 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.main.track.data.TrackData
 
 @Composable
@@ -32,13 +34,13 @@ fun TrackListItem(trackData: TrackData, onDelete: () -> Unit = {}, onClick: () -
                 .fillMaxWidth()
                 .padding(15.dp)
         ) {
-            Text(text = "Date: ${trackData.date}", color = Color.Blue)
+            Text(text = "${stringResource(R.string.date)}: ${trackData.date}", color = Color.Blue)
             Text(
                 text = trackData.name, fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
             Text(
-                text = "Time: ${trackData.time}",
+                text = "${stringResource(R.string.time)}: ${trackData.time}",
                 color = Color.Magenta
             )
             Row(
@@ -46,7 +48,7 @@ fun TrackListItem(trackData: TrackData, onDelete: () -> Unit = {}, onClick: () -
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Distance: ${trackData.distance}km",
+                    text = "${stringResource(R.string.distance)}: ${trackData.distance}km",
                     modifier = Modifier.weight(1f),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp

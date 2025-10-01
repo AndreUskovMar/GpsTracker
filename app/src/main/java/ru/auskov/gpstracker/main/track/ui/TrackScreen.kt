@@ -16,8 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.DialogType
 import ru.auskov.gpstracker.components.TrackDialog
 import ru.auskov.gpstracker.main.track.data.TrackData
@@ -57,14 +59,14 @@ fun TrackScreen(
 
         if (trackList.value.isEmpty()) {
             Text(
-                text = "Track list is empty!",
+                text = stringResource(R.string.empty_tracks),
                 modifier = Modifier.align(Alignment.Center)
             )
         }
     }
 
     TrackDialog(
-        title = "Delete track",
+        title = stringResource(R.string.delete_track),
         isVisible = isTrackDialogVisible,
         dialogType = DialogType.DELETE,
         onDismiss = {

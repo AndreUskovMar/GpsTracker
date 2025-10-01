@@ -10,14 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import ru.auskov.gpstracker.main.bottom_nav_bar.data.BottomMenuItem
 
 @Composable
 fun BottomMenu(
-    selectedItemTitle: String,
-    onItemClick: (String) -> Unit
+    selectedItemTitle: Int,
+    onItemClick: (Int) -> Unit
 ) {
     val items = listOf(
         BottomMenuItem.Home,
@@ -31,18 +32,18 @@ fun BottomMenu(
     ) {
         items.forEach { item ->
             NavigationBarItem(
-                selected = item.title == selectedItemTitle,
+                selected = item.titleId == selectedItemTitle,
                 onClick = {
-                    onItemClick(item.title)
+                    onItemClick(item.titleId)
                 },
                 icon = {
                     Icon(
                         painter = painterResource(item.iconId),
-                        contentDescription = item.title.toLowerCase(Locale.current)
+                        contentDescription = stringResource(item.titleId).toLowerCase(Locale.current)
                     )
                 },
                 label = {
-                    Text(text = item.title)
+                    Text(text = stringResource(item.titleId))
                 },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color.White,

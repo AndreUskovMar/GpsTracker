@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">GpsTracker</string>
+    <string name="track">Track</string>
+    <string name="home">Home</string>
+    <string name="settings">Settings</string>
+    <string name="time">Time</string>
+    <string name="date">Date</string>
+    <string name="average_speed">Average Speed</string>
+    <string name="speed">Speed</string>
+    <string name="distance">Distance</string>
+    <string name="sure_save_track">Do you want to save track?</string>
+    <string name="sure_delete_track">Are you sure you want to delete track?</string>
+    <string name="delete_track">Delete track</string>
+    <string name="enter_track">Enter track name</string>
+    <string name="cancel">Cancel</string>
+    <string name="empty_tracks">Track list is empty!</string>
+    <string name="update_time">Location update time</string>
+    <string name="priority">Priority</string>
+    <string name="line_width">Track line width</string>
+    <string name="line_color">Track line color</string>
 </resources>

@@ -15,10 +15,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.components.CustomDropDownMenu
 import ru.auskov.gpstracker.main.settings.data.ColorPickerData
 
@@ -64,7 +66,7 @@ fun SettingsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         CustomDropDownMenu(
-            "Location update time",
+            stringResource(R.string.update_time),
             options = optionsUpdateTime,
             selectedOption = selectedUpdateTime.value
         ) { selectedOption ->
@@ -72,7 +74,7 @@ fun SettingsScreen(
             viewModel.saveLocationUpdateInterval(selectedOption)
         }
         CustomDropDownMenu(
-            "Priority",
+            stringResource(R.string.priority),
             options = optionsPriority,
             selectedOption = selectedPriority.value
         ) { selectedOption ->
@@ -80,7 +82,7 @@ fun SettingsScreen(
             viewModel.savePriority(selectedOption)
         }
         CustomDropDownMenu(
-            "Track line width",
+            stringResource(R.string.line_width),
             options = optionsTrackLineWidth,
             selectedOption = selectedTrackLineWidth.value
         ) { selectedOption ->
@@ -89,7 +91,7 @@ fun SettingsScreen(
         }
 
         Text(
-            text = "Track line color",
+            text = stringResource(R.string.line_color),
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
             color = Color.Cyan,

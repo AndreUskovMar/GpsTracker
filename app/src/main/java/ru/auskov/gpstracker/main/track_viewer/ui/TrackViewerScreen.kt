@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -92,19 +93,19 @@ fun TrackViewerScreen(
         ) {
             Column {
                 RoundedCornerText(
-                    text = "Track: ${navData.name}",
+                    text = "${stringResource(R.string.track)}: ${navData.name}",
                     fontSize = 20,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                RoundedCornerText(text = "Time: ${navData.time}")
+                RoundedCornerText(text = "${stringResource(R.string.time)}: ${navData.time}")
                 Spacer(modifier = Modifier.height(3.dp))
-                RoundedCornerText(text = "Average Speed: ${navData.averageSpeed}km/h")
+                RoundedCornerText(text = "${stringResource(R.string.average_speed)}: ${navData.averageSpeed}km/h")
                 Spacer(modifier = Modifier.height(3.dp))
-                RoundedCornerText(text = "Speed: 0.0km/h")
+                RoundedCornerText(text = "${stringResource(R.string.speed)}: 0.0km/h")
                 Spacer(modifier = Modifier.height(3.dp))
                 RoundedCornerText(
-                    text = "Distance: ${navData.distance}km",
+                    text = "${stringResource(R.string.distance)}: ${navData.distance}km",
                     fontSize = 20,
                     fontWeight = FontWeight.Bold
                 )

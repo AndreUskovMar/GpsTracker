@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -136,13 +137,13 @@ fun HomeScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            RoundedCornerText(text = "Time: ${viewModel.timerState.value}")
+            RoundedCornerText(text = "${stringResource(R.string.time)}: ${viewModel.timerState.value}")
             Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "Average Speed: ${averageSpeed}km/h")
+            RoundedCornerText(text = "${stringResource(R.string.average_speed)}: ${averageSpeed}km/h")
             Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "Speed: ${speed}km/h")
+            RoundedCornerText(text = "${stringResource(R.string.speed)}: ${speed}km/h")
             Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "Distance: ${distance}km", fontSize = 20, fontWeight = FontWeight.Bold)
+            RoundedCornerText(text = "${stringResource(R.string.distance)}: ${distance}km", fontSize = 20, fontWeight = FontWeight.Bold)
         }
 
         Column(
@@ -207,7 +208,7 @@ fun HomeScreen(
     }
 
     TrackDialog(
-        title = "Do you want to save track?",
+        title = stringResource(R.string.sure_save_track),
         isVisible = isTrackDialogVisible,
         onDismiss = {
             isTrackDialogVisible = false

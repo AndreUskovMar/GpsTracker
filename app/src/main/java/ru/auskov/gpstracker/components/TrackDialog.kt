@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.utils.TimeUtils
 
 
@@ -36,7 +38,7 @@ fun TrackDialog(
                     TextField(
                         value = trackName.value,
                         label = {
-                            Text(text = "Enter track name:")
+                            Text(text = "${stringResource(R.string.enter_track)}:")
                         },
                         onValueChange = {
                             trackName.value = it
@@ -48,7 +50,7 @@ fun TrackDialog(
                         )
                     )
                 } else {
-                    Text(text = "Are you sure you want to delete track?")
+                    Text(text = stringResource(R.string.sure_delete_track))
                 }
             },
             onDismissRequest = {
@@ -63,7 +65,7 @@ fun TrackDialog(
                         trackName.value = ""
                     }
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = stringResource(R.string.cancel))
                 }
                 Button(
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),

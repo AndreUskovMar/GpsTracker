@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -48,19 +49,25 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             val selectedItemState = remember {
-                mutableStateOf(BottomMenuItem.Home.title)
+                mutableIntStateOf(BottomMenuItem.Home.titleId)
+            }
+
+            val isBottomTabbarVisible = remember {
+                mutableStateOf(true)
             }
 
             GpsTrackerTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        BottomMenu(selectedItemState.value) { itemTitle ->
-                            selectedItemState.value = itemTitle
-                            when(itemTitle) {
-                                BottomMenuItem.Home.title -> navController.navigate(HomeNavData)
-                                BottomMenuItem.Track.title -> navController.navigate(TrackNavData)
-                                BottomMenuItem.Settings.title -> navController.navigate(SettingsNavData)
+                        if (isBottomTabbarVisible.value) {
+                            BottomMenu(selectedItemState.intValue) { itemTitle ->
+                                selectedItemState.intValue = itemTitle
+                                when(itemTitle) {
+                                    BottomMenuItem.Home.titleId -> navController.navigate(HomeNavData)
+                                    BottomMenuItem.Track.titleId -> navController.navigate(TrackNavData)
+                                    BottomMenuItem.Settings.titleId -> navController.navigate(SettingsNavData)
+                                }
                             }
                         }
                     }
@@ -77,6 +84,7 @@ class MainActivity : ComponentActivity() {
                             SettingsScreen()
                         }
                         composable<TrackNavData> {
+                            isBottomTabbarVisible.value = true
                             TrackScreen { trackData ->
                                 navController.navigate(TrackViewerNavData(
                                     trackData.name,
@@ -91,6 +99,7 @@ class MainActivity : ComponentActivity() {
                         composable<TrackViewerNavData> { navBackStackEntry ->
                             val navData = navBackStackEntry.toRoute<TrackViewerNavData>()
                             TrackViewerScreen(navData)
+                            isBottomTabbarVisible.value = false
                         }
                     }
                 }
