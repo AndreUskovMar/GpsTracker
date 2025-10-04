@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GpsTracker</string>
+    <string name="app_name" translatable="false">GpsTracker</string>
     <string name="track">Track</string>
     <string name="home">Home</string>
     <string name="settings">Settings</string>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="track">Трэк</string>
+    <string name="home">Главная</string>
+    <string name="settings">Настройки</string>
+    <string name="time">Время</string>
+    <string name="date">Дата</string>
+    <string name="average_speed">Средняя скорость</string>
+    <string name="speed">Скорость</string>
+    <string name="distance">Расстояние</string>
+    <string name="sure_save_track">Вы хотите удалить трэк?</string>
+    <string name="sure_delete_track">Вы уверены, что хотите удалить трэк?</string>
+    <string name="delete_track">Удалить трэк</string>
+    <string name="enter_track">Введите имя трэка</string>
+    <string name="cancel">Отмена</string>
+    <string name="empty_tracks">Список трэков пуст!</string>
+    <string name="update_time">Время обновления местоположения</string>
+    <string name="priority">Приоритет</string>
+    <string name="line_width">Ширина линии трэка</string>
+    <string name="line_color">Цвет линии трэка</string>
+</resources>
