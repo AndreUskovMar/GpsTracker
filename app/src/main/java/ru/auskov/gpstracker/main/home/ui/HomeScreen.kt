@@ -2,43 +2,24 @@ package ru.auskov.gpstracker.main.home.ui
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
-import ru.auskov.gpstracker.components.RoundedCornerText
+import ru.auskov.gpstracker.components.OsmMap
 import ru.auskov.gpstracker.components.TrackDialog
+import ru.auskov.gpstracker.location.data.MapData
 import ru.auskov.gpstracker.main.home.map_utils.geoPointsToString
 import ru.auskov.gpstracker.main.home.map_utils.getAverageSpeed
-import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
 import ru.auskov.gpstracker.main.home.map_utils.isLocationServiceRunning
 import ru.auskov.gpstracker.main.home.map_utils.startLocationService
 import ru.auskov.gpstracker.main.home.map_utils.stopLocationService
@@ -51,32 +32,13 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val mapView = remember {
-        MapView(context).apply {
-            setTileSource(TileSourceFactory.MAPNIK)
-            setMultiTouchControls(true)
-            controller.setZoom(20.0)
-        }
-    }
 
-    val myLocationNewOverlay = remember {
-        mutableStateOf<MyLocationNewOverlay?>(null)
+    var mapDataState by remember {
+        mutableStateOf<MapData?>(null)
     }
 
     var isServiceRunning by remember {
         mutableStateOf(false)
-    }
-
-    var distance by remember {
-        mutableStateOf("0,0")
-    }
-
-    var speed by remember {
-        mutableStateOf("0,0")
-    }
-
-    var averageSpeed by remember {
-        mutableStateOf("0,0")
     }
 
     var isStartTracking by remember {
@@ -96,18 +58,13 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        myPolyline = Polyline().apply {
-            outlinePaint.color = Color(viewModel.getColor().toULong()).toArgb()
-            outlinePaint.strokeWidth = viewModel.getTrackLineWidth().toFloat()
-        }
-        myLocationNewOverlay.value = initMyLocationOverlay(mapView)
-        mapView.overlays.add(myPolyline)
-        mapView.overlays.add(myLocationNewOverlay.value)
         isServiceRunning = isLocationServiceRunning(context)
         viewModel.locationFlow.collect { locationData ->
-            distance = String.format("%.1f", locationData.distance / 1000f)
-            speed = String.format("%.1f", 3.6 * locationData.speed)
-            averageSpeed = getAverageSpeed(locationData.distance, locationData.startServiceTime)
+            val distance = String.format("%.1f", locationData.distance / 1000f)
+            val speed = String.format("%.1f", 3.6 * locationData.speed)
+            val averageSpeed = getAverageSpeed(locationData.distance, locationData.startServiceTime)
+
+            mapDataState = MapData(averageSpeed, speed, distance)
 
             if (isServiceRunning && !isStartTracking) {
                 isStartTracking = true
@@ -126,86 +83,43 @@ fun HomeScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(15.dp),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            RoundedCornerText(text = "${stringResource(R.string.time)}: ${viewModel.timerState.value}")
-            Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "${stringResource(R.string.average_speed)}: ${averageSpeed}km/h")
-            Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "${stringResource(R.string.speed)}: ${speed}km/h")
-            Spacer(modifier = Modifier.height(3.dp))
-            RoundedCornerText(text = "${stringResource(R.string.distance)}: ${distance}km", fontSize = 20, fontWeight = FontWeight.Bold)
+    OsmMap(
+        lineColor = Color(viewModel.getColor().toULong()).toArgb(),
+        lineWidth = viewModel.getTrackLineWidth().toFloat(),
+        timerText = viewModel.timerState.value,
+        mapData = mapDataState,
+        topButtonIconId = R.drawable.ic_follow_location,
+        middleButtonIconId = R.drawable.ic_my_location,
+        bottomButtonIconId = if (isServiceRunning) {
+            R.drawable.ic_stop
+        } else {
+            R.drawable.ic_play
+        },
+        onTopButtonClick = { _, myLocationNewOverlay ->
+            myLocationNewOverlay.enableFollowLocation()
+        },
+        onMiddleButtonClick = { mapView, myLocationNewOverlay ->
+            mapView.controller.animateTo(myLocationNewOverlay.myLocation)
+        },
+        onBottomButtonClick = { _, _ ->
+            if (isServiceRunning) {
+                stopLocationService(context)
+                viewModel.stopTimer()
+                isServiceRunning = false
+                isTrackDialogVisible = true
+            } else {
+                isServiceRunning = true
+                val priority = viewModel.getPriority()
+                val updateTime = viewModel.getLocationUpdateInterval().toLong()
+                val startTimeInMillis = System.currentTimeMillis()
+                viewModel.startTimer(startTimeInMillis)
+                startLocationService(context, startTimeInMillis, updateTime, priority)
+            }
+        },
+        onPolylineInit = { polyline ->
+            myPolyline = polyline
         }
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.End
-        ) {
-            FloatingActionButton(
-                containerColor = Color.White,
-                contentColor = Color.Black,
-                onClick = {
-                    myLocationNewOverlay.value?.enableFollowLocation()
-                }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_follow_location),
-                    contentDescription = "follow_location"
-                )
-            }
-            Spacer(Modifier.height(5.dp))
-            FloatingActionButton(
-                containerColor = Color.White,
-                contentColor = Color.Black,
-                onClick = {
-                    mapView.controller.animateTo(myLocationNewOverlay.value?.myLocation)
-                }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_my_location),
-                    contentDescription = "my_location"
-                )
-            }
-            Spacer(Modifier.height(5.dp))
-            FloatingActionButton(
-                containerColor = Color.White,
-                contentColor = Color.Black,
-                onClick = {
-                    if (isServiceRunning) {
-                        stopLocationService(context)
-                        viewModel.stopTimer()
-                        isServiceRunning = false
-                        isTrackDialogVisible = true
-                    } else {
-                        isServiceRunning = true
-                        val priority = viewModel.getPriority()
-                        val updateTime = viewModel.getLocationUpdateInterval().toLong()
-                        val startTimeInMillis = System.currentTimeMillis()
-                        viewModel.startTimer(startTimeInMillis)
-                        startLocationService(context, startTimeInMillis, updateTime, priority)
-                    }
-                }
-            ) {
-                Icon(
-                    painter = painterResource(if (isServiceRunning) {
-                        R.drawable.ic_stop
-                    } else {
-                        R.drawable.ic_play
-                    }),
-                    contentDescription = "play_and_stop"
-                )
-            }
-        }
-    }
+    )
 
     TrackDialog(
         title = stringResource(R.string.sure_save_track),
@@ -216,11 +130,12 @@ fun HomeScreen(
         onSubmit = { trackName ->
             isTrackDialogVisible = false
             Log.d("MyLog", trackName)
+            if (mapDataState == null) return@TrackDialog
             val trackData = TrackData(
                 name = trackName,
                 date = TimeUtils.getTrackTime(),
-                distance = distance,
-                averageSpeed = averageSpeed,
+                distance = mapDataState!!.distance,
+                averageSpeed = mapDataState!!.averageSpeed,
                 geoPoints = geoPointsToString(myPolyline?.actualPoints!!)
             )
 

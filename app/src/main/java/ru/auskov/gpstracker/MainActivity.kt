@@ -23,7 +23,7 @@ import org.osmdroid.config.Configuration
 import ru.auskov.gpstracker.main.bottom_nav_bar.data.BottomMenuItem
 import ru.auskov.gpstracker.main.bottom_nav_bar.ui.BottomMenu
 import ru.auskov.gpstracker.main.home.data.HomeNavData
-import ru.auskov.gpstracker.main.home.ui.HomeScreen2
+import ru.auskov.gpstracker.main.home.ui.HomeScreen
 import ru.auskov.gpstracker.main.settings.data.SettingsNavData
 import ru.auskov.gpstracker.main.settings.ui.SettingsScreen
 import ru.auskov.gpstracker.main.track.data.TrackNavData
@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable<HomeNavData> {
-                            HomeScreen2()
+                            HomeScreen()
                         }
                         composable<SettingsNavData> {
                             SettingsScreen()

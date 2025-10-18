@@ -12,7 +12,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,11 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.auskov.gpstracker.R
 import ru.auskov.gpstracker.location.data.MapData
+import ru.auskov.gpstracker.main.home.map_utils.createMarker
 import ru.auskov.gpstracker.main.home.map_utils.initMyLocationOverlay
 
 @Composable
@@ -37,6 +38,7 @@ fun OsmMap(
     lineColor: Int,
     timerText: String,
     mapData: MapData?,
+    geoPointsList: List<GeoPoint> = emptyList(),
     buttonsPanel: @Composable () -> Unit = {},
     topButtonIconId: Int,
     middleButtonIconId: Int,
@@ -44,7 +46,7 @@ fun OsmMap(
     onTopButtonClick: (MapView, MyLocationNewOverlay) -> Unit,
     onMiddleButtonClick: (MapView, MyLocationNewOverlay) -> Unit,
     onBottomButtonClick: (MapView, MyLocationNewOverlay) -> Unit,
-    onPolylineInit: (Polyline) -> Unit,
+    onPolylineInit: (Polyline) -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -57,7 +59,7 @@ fun OsmMap(
     }
 
     val myLocationNewOverlay = remember {
-        mutableStateOf<MyLocationNewOverlay?>(null)
+        initMyLocationOverlay(mapView)
     }
 
     LaunchedEffect(Unit) {
@@ -66,9 +68,20 @@ fun OsmMap(
             outlinePaint.strokeWidth = lineWidth
         }
         onPolylineInit(polyline)
-        myLocationNewOverlay.value = initMyLocationOverlay(mapView)
+        geoPointsList.forEach { geoPoint ->
+            polyline.addPoint(geoPoint)
+        }
         mapView.overlays.add(polyline)
-        mapView.overlays.add(myLocationNewOverlay.value)
+        mapView.overlays.add(myLocationNewOverlay)
+
+        if (geoPointsList.isNotEmpty()) {
+            val markers = listOf(
+                createMarker(geoPointsList.first(), R.drawable.ic_follow_location, mapView),
+                createMarker(geoPointsList.last(), R.drawable.ic_follow_location, mapView),
+            )
+
+            mapView.overlays.addAll(markers)
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -87,7 +100,11 @@ fun OsmMap(
                 Spacer(modifier = Modifier.height(3.dp))
                 RoundedCornerText(text = "${stringResource(R.string.speed)}: ${mapData?.speed ?: 0.0}km/h")
                 Spacer(modifier = Modifier.height(3.dp))
-                RoundedCornerText(text = "${stringResource(R.string.distance)}: ${mapData?.distance ?: 0.0}km", fontSize = 20, fontWeight = FontWeight.Bold)
+                RoundedCornerText(
+                    text = "${stringResource(R.string.distance)}: ${mapData?.distance ?: 0.0}km",
+                    fontSize = 20,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             Column(
@@ -99,7 +116,7 @@ fun OsmMap(
                     containerColor = Color.White,
                     contentColor = Color.Black,
                     onClick = {
-                        onTopButtonClick(mapView, myLocationNewOverlay.value!!)
+                        onTopButtonClick(mapView, myLocationNewOverlay)
                     }
                 ) {
                     Icon(
@@ -112,7 +129,7 @@ fun OsmMap(
                     containerColor = Color.White,
                     contentColor = Color.Black,
                     onClick = {
-                        onMiddleButtonClick(mapView, myLocationNewOverlay.value!!)
+                        onMiddleButtonClick(mapView, myLocationNewOverlay)
                     }
                 ) {
                     Icon(
@@ -125,7 +142,7 @@ fun OsmMap(
                     containerColor = Color.White,
                     contentColor = Color.Black,
                     onClick = {
-                        onBottomButtonClick(mapView, myLocationNewOverlay.value!!)
+                        onBottomButtonClick(mapView, myLocationNewOverlay)
                     }
                 ) {
                     Icon(
