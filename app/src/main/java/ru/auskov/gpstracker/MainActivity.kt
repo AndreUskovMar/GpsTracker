@@ -1,10 +1,14 @@
 package ru.auskov.gpstracker
 
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,10 +35,14 @@ import ru.auskov.gpstracker.main.track.ui.TrackScreen
 import ru.auskov.gpstracker.main.track_viewer.data.TrackViewerNavData
 import ru.auskov.gpstracker.main.track_viewer.ui.TrackViewerScreen
 import ru.auskov.gpstracker.ui.theme.GpsTrackerTheme
+import ru.auskov.gpstracker.utils.PermissionManager
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     val viewModel: MainViewModel by viewModels()
+
+    private lateinit var fineLocationPermission: ActivityResultLauncher<String>
+    private lateinit var bgLocationPermission: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +53,59 @@ class MainActivity : ComponentActivity() {
             }
         }
         setUpOSM(this)
+
+        fineLocationPermission = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                PermissionManager.checkBackgroundLocation(
+                    this,
+                    onPermissionGranted = {
+
+                    },
+                    onPermissionDenied = {
+                        bgLocationPermission.launch(
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        )
+                    }
+                )
+            } else {
+                Toast.makeText(this, "Fine location permission has been denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        bgLocationPermission = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                Toast.makeText(this, "Background location permission has been granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Background location permission has been denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        PermissionManager.checkFineLocation(
+            this,
+            onPermissionGranted = {
+                PermissionManager.checkBackgroundLocation(
+                    this,
+                    onPermissionGranted = {
+                        Toast.makeText(this, "Background location permission has been granted", Toast.LENGTH_SHORT).show()
+                    },
+                    onPermissionDenied = {
+                        bgLocationPermission.launch(
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        )
+                    }
+                )
+            },
+            onPermissionDenied = {
+                fineLocationPermission.launch(
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            }
+        )
+
         setContent {
             val navController = rememberNavController()
 
